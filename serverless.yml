@@ -1,0 +1,71 @@
+service: aws-nodejs
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+plugins:
+  - serverless-sam
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  profile: ${file(./aws_params.yml):profile}
+  stage: ${file(./aws_params.yml):stage}
+  region: ${file(./aws_params.yml):region}
+  deploymentBucket: ${file(./aws_params.yml):DEPLOYMENT_S3_BUCKET}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:GetObject
+        - s3:ListBucket
+        - s3:PutObject
+      Resource: "arn:aws:s3:::${file(./aws_params.yml):INPUT_S3_BUCKET}/*"
+
+  environment:
+    FTP_USERNAME: ${file(./aws_params.yml):FTP_USERNAME}
+    FTP_HOST: ${file(./aws_params.yml):FTP_HOST}
+    FTP_PORT: ${file(./aws_params.yml):FTP_PORT}
+    FTP_PASSWORD: ${file(./aws_params.yml):FTP_PASSWORD}
+    FTP_FOLDER: ${file(./aws_params.yml):FTP_FOLDER}
+
+functions:
+  # hello:
+  #   handler: handler.hello
+  #   events:
+  #     - http:
+  #         path: alexdemo/show
+  #         method: get
+  #         cors: true
+  #         integration: lambda
+  #   vpc:
+  #     securityGroupIds:
+  #       - sg-0baf68d72de9ed211
+  #     subnetIds:
+  #       - subnet-01c0ade6c56b17c17
+  #       - subnet-0ea2bd2413ce2f7c3
+
+  ftp_upload:
+    handler: handler.uploadFileToFTP
+    events:
+      - s3:
+          bucket: ${file(./aws_params.yml):INPUT_S3_BUCKET}
+          event: s3:ObjectCreated:*
+          # rules:
+          #   - prefix: ${file(./aws_params.yml):INPUT_S3_BUCKET_FOLDER}/
+          #   - suffix: .jpg
+    # vpc:
+    #   securityGroupIds:
+    #     - sg-0baf68d72de9ed211
+    #   subnetIds:
+    #     - subnet-01c0ade6c56b17c17
+    #     - subnet-0ea2bd2413ce2f7c3
+
+
+#resources:
+#  Resources:
+#    NewResource:
+#      Type: AWS::S3::Bucket
+#      Properties:
+#        BucketName: ${file(./config/aws_params.yml):DEPLOYMENT_S3_BUCKET}
+#  Outputs:
+#     NewOutput:
+#       Description: "Description for the output"
+#       Value: "Some output value"

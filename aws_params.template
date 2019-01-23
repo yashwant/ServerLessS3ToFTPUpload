@@ -1,0 +1,13 @@
+region: us-east-1
+stage: dev
+profile: yashwant.xeroeta
+DEPLOYMENT_S3_BUCKET: demo-serverless-ftp-upload-deployment
+INPUT_S3_BUCKET: test-upload-sync-bucket
+INPUT_S3_BUCKET_FOLDER: uploads/
+
+#FTP credentials
+FTP_USERNAME: 
+FTP_HOST: 
+FTP_PORT: 21
+FTP_PASSWORD: 
+FTP_FOLDER: 

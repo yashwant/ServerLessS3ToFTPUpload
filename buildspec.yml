@@ -1,0 +1,22 @@
+version: 0.1
+environment_variables:
+  plaintext:
+    "INPUT_FILE": "ServerlessExportYaml.yaml"
+    "S3_BUCKET": ""
+
+phases:
+  install:
+    commands:
+      - npm install -g mocha
+      - npm install -g serverless
+      - npm install
+
+  build:
+    commands:
+      - serverless package
+      - serverless sam export --output $INPUT_FILE
+      - aws cloudformation package --template-file $INPUT_FILE --s3-bucket $BUILD_OUTPUT_BUCKET --output-template-file packaged.yaml
+
+artifacts:
+  files:
+    - packaged.yaml

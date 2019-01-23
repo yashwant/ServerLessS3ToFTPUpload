@@ -1,6 +1,10 @@
-# serverless-cicd-demo-app
+# ServerlessS3ToFTPUpload
 
-1) Make sure that buildspec.yml is present in the root of project code
-2) serverless-sam serverless plugin is installed
-
-##Test 1
+## Setup Steps:
+1) Take a git pull of code
+2) Run npm install to install package dependencies
+3) Rename aws_params.template file to aws_params.yml
+4) Update parameter values
+5) Deploy the code using $ sls deploy
+6) Test by uploading files to $INPUT_S3_BUCKET S3 bucket
+7) check copied file in your FTP server inside $FTP_FOLDER folder 

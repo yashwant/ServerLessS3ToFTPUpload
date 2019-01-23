@@ -9,7 +9,6 @@
     "serverless-sam": "^0.2.0"
   },
   "dependencies": {
-    "async": "^2.6.1",
     "aws-sdk": "^2.392.0",
     "bluebird": "^3.5.3",
     "ftp": "^0.3.10",

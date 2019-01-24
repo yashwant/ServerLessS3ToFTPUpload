@@ -35,11 +35,11 @@ functions:
           method: get
           cors: true
           integration: lambda
-    vpc:
-      securityGroupIds:
-        - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
-      subnetIds:
-        - Ref: ServerlessPrivateSubnetA
+    vpc: ${file(./aws_params.yml):VPC_CONFIG}
+      # securityGroupIds:
+      #   - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+      # subnetIds:
+      #   - Ref: ServerlessPrivateSubnetA
 
   ftp_upload:
     handler: handler.uploadFileToFTP
@@ -50,103 +50,103 @@ functions:
           # rules:
           #   - prefix: ${file(./aws_params.yml):INPUT_S3_BUCKET_FOLDER}/
           #   - suffix: .jpg
-    vpc:
-      securityGroupIds:
-        - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
-      subnetIds:
-        - Ref: ServerlessPrivateSubnetA
+    vpc: ${file(./aws_params.yml):VPC_CONFIG}
+      # securityGroupIds:
+      #   - "Fn::GetAtt": ServerlessSecurityGroup.GroupId
+      # subnetIds:
+      #   - Ref: ServerlessPrivateSubnetA
 
-resources:
-  Resources:
-    ServerlessVPC:
-      Type: AWS::EC2::VPC
-      Properties:
-        CidrBlock: "10.0.0.0/16"
-    ElasticIpLambda:
-      Type: AWS::EC2::EIP
-      Properties:
-        Domain: vpc
-    InternetGatewayLambda:
-      Type: AWS::EC2::InternetGateway
-    VPCGatewayAttachmentLambda:
-      Type: AWS::EC2::VPCGatewayAttachment
-      Properties:
-        VpcId:
-          Ref: ServerlessVPC
-        InternetGatewayId:
-          Ref: InternetGatewayLambda
-    NatGatewayLambda:
-      Type: AWS::EC2::NatGateway
-      Properties:
-        AllocationId:
-          Fn::GetAtt:
-            - ElasticIpLambda
-            - AllocationId
-        SubnetId:
-          Ref: ServerlessPublicSubnetA
-    ServerlessPrivateSubnetA:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: ServerlessVPC
-        AvailabilityZone: ${self:provider.region}a
-        CidrBlock: "10.0.1.0/24"
-    ServerlessPublicSubnetA:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::Subnet
-      Properties:
-        VpcId:
-          Ref: ServerlessVPC
-        AvailabilityZone: ${self:provider.region}a
-        CidrBlock: "10.0.2.0/24"
-    DefaultPrivateRouteTable:
-      Type: AWS::EC2::RouteTable
-      Properties:
-        VpcId:
-          Ref: ServerlessVPC
-    DefaultPrivateRoute:
-      Type: AWS::EC2::Route
-      Properties:
-        RouteTableId:
-          Ref: DefaultPrivateRouteTable
-        DestinationCidrBlock: 0.0.0.0/0
-        NatGatewayId:
-          Ref: NatGatewayLambda
-    DefaultPublicRouteTable:
-      Type: AWS::EC2::RouteTable
-      Properties:
-        VpcId:
-          Ref: ServerlessVPC
-    DefaultPublicRoute:
-      Type: AWS::EC2::Route
-      Properties:
-        RouteTableId:
-          Ref: DefaultPublicRouteTable
-        DestinationCidrBlock: 0.0.0.0/0
-        GatewayId:
-          Ref: InternetGatewayLambda
-    SubnetRouteTableAssociationLambdaPrivateA:
-      Type: AWS::EC2::SubnetRouteTableAssociation
-      Properties:
-        SubnetId:
-          Ref: ServerlessPrivateSubnetA
-        RouteTableId:
-          Ref: DefaultPrivateRouteTable
-    SubnetRouteTableAssociationLambdaPublicA:
-      Type: AWS::EC2::SubnetRouteTableAssociation
-      Properties:
-        SubnetId:
-          Ref: ServerlessPublicSubnetA
-        RouteTableId:
-          Ref: DefaultPublicRouteTable
-    ServerlessSecurityGroup:
-      DependsOn: ServerlessVPC
-      Type: AWS::EC2::SecurityGroup
-      Properties:
-        GroupDescription: SecurityGroup for Serverless Functions
-        VpcId:
-          Ref: ServerlessVPC
+# resources:
+#   Resources:
+#     ServerlessVPC:
+#       Type: AWS::EC2::VPC
+#       Properties:
+#         CidrBlock: "10.0.0.0/16"
+#     ElasticIpLambda:
+#       Type: AWS::EC2::EIP
+#       Properties:
+#         Domain: vpc
+#     InternetGatewayLambda:
+#       Type: AWS::EC2::InternetGateway
+#     VPCGatewayAttachmentLambda:
+#       Type: AWS::EC2::VPCGatewayAttachment
+#       Properties:
+#         VpcId:
+#           Ref: ServerlessVPC
+#         InternetGatewayId:
+#           Ref: InternetGatewayLambda
+#     NatGatewayLambda:
+#       Type: AWS::EC2::NatGateway
+#       Properties:
+#         AllocationId:
+#           Fn::GetAtt:
+#             - ElasticIpLambda
+#             - AllocationId
+#         SubnetId:
+#           Ref: ServerlessPublicSubnetA
+#     ServerlessPrivateSubnetA:
+#       DependsOn: ServerlessVPC
+#       Type: AWS::EC2::Subnet
+#       Properties:
+#         VpcId:
+#           Ref: ServerlessVPC
+#         AvailabilityZone: ${self:provider.region}a
+#         CidrBlock: "10.0.1.0/24"
+#     ServerlessPublicSubnetA:
+#       DependsOn: ServerlessVPC
+#       Type: AWS::EC2::Subnet
+#       Properties:
+#         VpcId:
+#           Ref: ServerlessVPC
+#         AvailabilityZone: ${self:provider.region}a
+#         CidrBlock: "10.0.2.0/24"
+#     DefaultPrivateRouteTable:
+#       Type: AWS::EC2::RouteTable
+#       Properties:
+#         VpcId:
+#           Ref: ServerlessVPC
+#     DefaultPrivateRoute:
+#       Type: AWS::EC2::Route
+#       Properties:
+#         RouteTableId:
+#           Ref: DefaultPrivateRouteTable
+#         DestinationCidrBlock: 0.0.0.0/0
+#         NatGatewayId:
+#           Ref: NatGatewayLambda
+#     DefaultPublicRouteTable:
+#       Type: AWS::EC2::RouteTable
+#       Properties:
+#         VpcId:
+#           Ref: ServerlessVPC
+#     DefaultPublicRoute:
+#       Type: AWS::EC2::Route
+#       Properties:
+#         RouteTableId:
+#           Ref: DefaultPublicRouteTable
+#         DestinationCidrBlock: 0.0.0.0/0
+#         GatewayId:
+#           Ref: InternetGatewayLambda
+#     SubnetRouteTableAssociationLambdaPrivateA:
+#       Type: AWS::EC2::SubnetRouteTableAssociation
+#       Properties:
+#         SubnetId:
+#           Ref: ServerlessPrivateSubnetA
+#         RouteTableId:
+#           Ref: DefaultPrivateRouteTable
+#     SubnetRouteTableAssociationLambdaPublicA:
+#       Type: AWS::EC2::SubnetRouteTableAssociation
+#       Properties:
+#         SubnetId:
+#           Ref: ServerlessPublicSubnetA
+#         RouteTableId:
+#           Ref: DefaultPublicRouteTable
+#     ServerlessSecurityGroup:
+#       DependsOn: ServerlessVPC
+#       Type: AWS::EC2::SecurityGroup
+#       Properties:
+#         GroupDescription: SecurityGroup for Serverless Functions
+#         VpcId:
+#           Ref: ServerlessVPC
 
 #resources:
 #  Resources:

@@ -11,3 +11,9 @@ FTP_HOST:
 FTP_PORT: 21
 FTP_PASSWORD: 
 FTP_FOLDER: 
+
+VPC_CONFIG:
+  securityGroupIds:
+    - <group id>
+  subnetIds:
+    - <subnet id>
